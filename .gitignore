@@ -1,48 +1,49 @@
-# Prerequisites
-*.d
-
-# Object files
+# Build artifacts / object files
 *.o
-*.ko
 *.obj
+*.ko
 *.elf
+*.out
+*.i*86
+*.x86_64
+*.hex
+
+# Dependency files (make/gcc)
+*.d
 
 # Linker output
 *.ilk
 *.map
 *.exp
 
-# Precompiled Headers
+# Precompiled headers
 *.gch
 *.pch
 
-# Libraries
-*.lib
+# Static / archive libraries
 *.a
+*.lib
 *.la
 *.lo
 
-# Shared objects (inc. Windows DLLs)
-*.dll
+# Shared objects / dynamic libs
 *.so
 *.so.*
 *.dylib
+*.dll
 
 # Executables
 *.exe
-*.out
 *.app
-*.i*86
-*.x86_64
-*.hex
 
-# Debug files
+# Debug files / symbols
 *.dSYM/
 *.su
 *.idb
 *.pdb
+*.dwo
 
-# Kernel Module Compile Results
+# Kernel module results
 *.mod*
 *.cmd
 .tmp_versions/
@@ -51,5 +52,41 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# debug information files
-*.dwo
+# IDEs / editors / OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Logs / runtime / temp
+*.log
+core
+*.tmp
+.cache/
+
+# Build dirs (common)
+build/
+bin/
+
+# Databases / local development data
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Coverage / test output
+coverage/
+*.gcda
+*.gcno
+
+# Environment / secrets
+.env
+.env.local
+
+# Misc (keep docs/readmes tracked — remove *.txt!)
+# *.txt    <-- DO NOT IGNORE .txt generally
+
+hash_cracker
+wordlist.txt
