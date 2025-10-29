@@ -3,9 +3,8 @@
 
 #include <stdio.h>
 
-static const char *const USAGE_MINI[];
-static const char *const USAGE_BIG_OPTIONS[];
-static const char *const USAGE_BIG_HASHMODES[];
 void usage_big_print();
+void usage_mini_print();
+void usage_big_hashmodes();
 
 #endif
