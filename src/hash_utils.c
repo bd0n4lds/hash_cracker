@@ -1,63 +1,27 @@
 #include "hash_utils.h"
 #include "usage.h"
 #include "bcrypt.h"
+#include "md5.h"
+#include "sha1.h"
+#include "sha256.h"
+#include "sha512.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 
-#include <openssl/md5.h>
-#include <openssl/sha.h>
-#include <crypt.h>
-#include <argon2.h>
-
-/*
-TODO List for hash_utils.c:
-
-1. Core Hash Functions:
-   - Implement for each type:
-     * MD5_hash(input, output)
-     * SHA1_hash(input, output)
-     * SHA256_hash(input, output)
-   - Use OpenSSL if available
-   - Fall back to minimal impl if needed
-
-2. Validation & Comparison:
-   - Implement compare_hash():
-     * Normalize case
-     * Handle different lengths
-     * Constant-time compare
-   
-   - Implement is_valid_hash():
-     * Check length
-     * Verify hex chars
-     * Validate format
-
-3. Helper Functions:
-   - hex_to_bytes conversion
-   - Case normalization
-   - Length validation
-   
-4. Tests to Write:
-- Known test vectors
-- Case insensitive compare
-- Invalid inputs
-- Each hash type
-*/
-
-
 hash_type_t hash_type_from_string(const char *hash_type){
 
    if(!hash_type){
       fprintf(stderr, "Cannot leave the hash mode empty!\n");
-      return 1;
+      return UNKNOWN_HASH;
    }
 
    if(isdigit((unsigned char)hash_type[0])) { // If user enters the numeric code for the mode it checks with this
       int mode = atoi(hash_type);
 
-      switch (*hash_type)
+      switch (mode)
       {
       case 1:
          return HASH_MD5;
@@ -81,13 +45,19 @@ hash_type_t hash_type_from_string(const char *hash_type){
          fprintf(stderr, "Unknown hash type: %s\n", hash_type);
          fprintf(stderr, "Valid types:\n");
          usage_big_hashmodes();
-         return 1;
+         return UNKNOWN_HASH;
          break;
       }
    }
 
    //Case 2: if user enters the name (md5, argon2, bcrypt...)
-   char mode_string = tolower(hash_type);
+   char mode_string[32];
+   int i;
+   for (i = 0; hash_type[i] && i < (int)sizeof(mode_string) - 1; i++) {
+      mode_string[i] = tolower((unsigned char)hash_type[i]);
+   }
+   mode_string[i] = '\0';
+
    if(strcmp(mode_string, "md5") == 0) return HASH_MD5;
    if(strcmp(mode_string, "sha1") == 0) return HASH_SHA1;
    if(strcmp(mode_string, "sha256") == 0) return HASH_SHA256;
@@ -102,24 +72,90 @@ hash_type_t hash_type_from_string(const char *hash_type){
    return UNKNOWN_HASH;
 }
 
+bool is_valid_hash(hash_type_t type, const char *hash){
 
-size_t get_hash_length(hash_type_t mode){
-   //this function will return the hex length of the hashing algorithm except if they are argon2 or bcrypt cause they don't have fixed hex lengths
-   switch (mode)
+   switch (type)
    {
    case HASH_MD5:
-      return MD5_HEX_LENGTH;
+      return is_valid_md5_hash(hash);
       break;
    case HASH_SHA1:
-      return SHA1_HEX_LENGTH;
+      return is_valid_sha1_hash(hash);
       break;
    case HASH_SHA256:
-      return SHA256_HEX_LENGTH;
+      return is_valid_sha256_hash(hash);
       break;
    case HASH_SHA512:
-      return SHA512_HEX_LENGTH;
+      return is_valid_sha512_hash(hash);
+      break;
+   case HASH_BCRYPT:
+      return is_valid_bcrypt_hash(hash);
+      break;
+   case HASH_ARGON2:
+      // return is_valid_argon2_hash(hash);
       break;
    default:
-      return 0;
+      fprintf(stderr, "Invalid hash type!\n");
+      return false;
+      break;
    }
+
+}
+
+
+
+int hash_compute_hex(hash_type_t type, const char *candidate, char *out_hex, size_t out_hex_len){
+
+   switch (type)
+   {
+   case HASH_MD5:
+      return md5_compute_hex(candidate, out_hex, out_hex_len);
+      break;
+   case HASH_SHA1:
+      return sha1_compute_hex(candidate, out_hex, out_hex_len);
+      break;
+   case HASH_SHA256:
+      return sha256_compute_hex(candidate, out_hex, out_hex_len);
+      break;
+   case HASH_SHA512:
+      return sha512_compute_hex(candidate, out_hex, out_hex_len);
+      break;
+   default:
+      fprintf(stderr, "Invalid hash type!\n");
+      return -1;
+      break;
+   }
+
+}
+
+
+
+bool hash_verify(hash_type_t type, const char *candidate, const char *target_hash){
+
+   switch(type){
+   case HASH_MD5:
+      return md5_verify(candidate, target_hash);
+      break;
+   case HASH_SHA1:
+      return sha1_verify(candidate, target_hash);
+      break;
+   case HASH_SHA256:
+      return sha256_verify(candidate, target_hash);
+      break;
+   case HASH_SHA512:
+      return sha512_verify(candidate, target_hash);
+      break;
+   case HASH_BCRYPT:
+      printf("hash_utils.c: [DEBUG hash_verify] Calling bcrypt_verify()\n");
+      return bcrypt_verify(candidate, target_hash);
+      break;
+   case HASH_ARGON2:
+      // return argon2_verify(candidate, target_hash);
+      break;
+   default:
+      fprintf(stderr, "Invalid hash type!\n");
+      return -1;
+      break;
+   }
+
 }
