@@ -1,0 +1,103 @@
+#include "bcrypt.h"
+
+#include <stdio.h>
+#include <crypt.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdbool.h>
+
+#define BCRYPT_HASH_LEN 64
+
+/**
+ * This function below checks if the hash provided by the user is a valid bcrypt hash
+ */
+
+bool is_valid_bcrypt_hash(const char *hash) {
+    // Check for NULL and minimum length [59 chars total min]
+    if (!hash || strlen(hash) < 59) return false;
+
+    // Check prefix $2a$ or $2b$ or $2x$ or $2y$
+    if (strncmp(hash, "$2a$", 4) != 0 &&
+        strncmp(hash, "$2b$", 4) != 0 &&
+        strncmp(hash, "$2x$", 4) != 0 &&
+        strncmp(hash, "$2y$", 4) != 0) {
+        return false;
+    }
+
+    // Validate cost parameter (between 04 and 31)
+    if (!isdigit(hash[4]) || !isdigit(hash[5]) || hash[6] != '$') {
+        return false;
+    }
+    int cost = (hash[4] - '0') * 10 + (hash[5] - '0');
+    if (cost < 4 || cost > 31) return false;
+
+    // Check salt length (22 chars) and hash length (31 chars)
+    size_t len = strlen(hash);
+    if (len != 59 && len != 60) return false; // $2x$cc$[22 chars salt][31 chars hash]
+
+    const char *valid_chars = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (size_t i = 7; i < len; i++) {
+        if (!strchr(valid_chars, hash[i])) return false;
+    }
+
+    return true;
+}
+
+bool bcrypt_verify(const char *candidate, const char *target_hash) {
+    printf("[DEBUG] bcrypt_verify called: candidate= %s", candidate);
+    
+    if (!candidate || !target_hash){
+        printf("[DEBUG] NULL parameter\n");
+        return false;
+    }
+    
+    if (!is_valid_bcrypt_hash(target_hash)){
+        printf("[DEBUG] Invalid hash format!\n");
+        return false;
+    }
+    
+    printf("[DEBUG] Calling crypt()...\n");
+    char *computed = crypt(candidate, target_hash);
+    printf("bcrypt.c: [DEBUG crypt:61] computed: %s", computed);
+    if (!computed){
+        printf("[DEBUG] crypt() failed...\n");
+        return false;
+    }
+    
+    return strcmp(computed, target_hash) == 0;
+}
+
+
+/**
+ * Extract bcrypt cost factor from hash
+ * Returns cost (4-31) or -1 on error
+ */
+int bcrypt_get_cost(const char *hash) {
+    if (!hash || strlen(hash) < 7) return -1;
+    
+    // Cost is characters 4-5 in $2a$CC$...
+    if (!isdigit(hash[4]) || !isdigit(hash[5])) return -1;
+    
+    int cost = (hash[4] - '0') * 10 + (hash[5] - '0');
+    if (cost < 4 || cost > 31) return -1;
+    
+    return cost;
+}
+
+/**
+ * Get a printable description of the bcrypt hash
+ * Useful for showing hash details to user
+ */
+void bcrypt_describe_hash(const char *hash, char *desc, size_t desc_len) {
+    if (!hash || !desc || desc_len < 32) {
+        if (desc && desc_len > 0) desc[0] = '\0';
+        return;
+    }
+
+    char version = (hash && strlen(hash) > 3) ? hash[2] : '?';
+    int cost = bcrypt_get_cost(hash);
+
+    snprintf(desc, desc_len,
+        "bcrypt (2%c) with cost factor %d",
+        version, cost);
+}
