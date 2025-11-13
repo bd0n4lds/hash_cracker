@@ -146,7 +146,6 @@ bool hash_verify(hash_type_t type, const char *candidate, const char *target_has
       return sha512_verify(candidate, target_hash);
       break;
    case HASH_BCRYPT:
-      printf("hash_utils.c: [DEBUG hash_verify] Calling bcrypt_verify()\n");
       return bcrypt_verify(candidate, target_hash);
       break;
    case HASH_ARGON2:
