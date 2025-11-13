@@ -100,7 +100,7 @@ char **wordlist_load_all(const char *wordlist_path, size_t *out_count){
     return NULL;
   }
 
-  printf("Loading %zu passwords into memory\n", line_count);
+  printf("\nLoading %zu passwords into memory\n", line_count);
   rewind(fp);
 
   // Allocating array of string pointers
