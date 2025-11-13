@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "bcrypt.h"
 
 #include <stdio.h>
@@ -44,23 +46,18 @@ bool is_valid_bcrypt_hash(const char *hash) {
 }
 
 bool bcrypt_verify(const char *candidate, const char *target_hash) {
-    printf("[DEBUG] bcrypt_verify called: candidate= %s", candidate);
     
     if (!candidate || !target_hash){
-        printf("[DEBUG] NULL parameter\n");
         return false;
     }
     
     if (!is_valid_bcrypt_hash(target_hash)){
-        printf("[DEBUG] Invalid hash format!\n");
         return false;
     }
     
-    printf("[DEBUG] Calling crypt()...\n");
-    char *computed = crypt(candidate, target_hash);
-    printf("bcrypt.c: [DEBUG crypt:61] computed: %s", computed);
+    struct crypt_data data = {0};        
+    char *computed = crypt_r(candidate, target_hash, &data);
     if (!computed){
-        printf("[DEBUG] crypt() failed...\n");
         return false;
     }
     
