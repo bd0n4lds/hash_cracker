@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "md5.h"
 #include <openssl/evp.h>
 #include <string.h>

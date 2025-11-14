@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "sha512.h"
 #include <openssl/evp.h>
 #include <string.h>
