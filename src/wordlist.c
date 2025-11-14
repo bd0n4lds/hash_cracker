@@ -1,4 +1,7 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include "wordlist.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

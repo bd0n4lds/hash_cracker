@@ -12,6 +12,7 @@ static const char *const USAGE_BIG_OPTIONS[] = {
 "Usage: ./hash_cracker --hash=[hash|hashfile] --hash-type=MD5 --wordlist=[wordlist|directory]",
 "Usage: ./hash_cracker -H [hash|hashfile] -m 001 -w [wordlist|directory]",
 "",
+"===========================================================================================",
 "",
 "Options short/long          |     Type      |           Description              | Example",
 "============================+===============+====================================+=========",
@@ -21,10 +22,10 @@ static const char *const USAGE_BIG_OPTIONS[] = {
 "-a, --mode                  |     Num       | The mode you want to execute       | -a 0 (dictionary attack)",
 "-t, --threads=              |     Num       | Number of threads (1-16, default 4)| -t 8",
 "    --types                 |     Menu      | Hash types supported               |",
-"-h, --help                  |   Help Menu   | Help Menu (This Menu)              |"
-};
-
-static const char *const USAGE_BIG_HASHMODES[] = {
+"-h, --help                  |   Help Menu   | Help Menu (This Menu)              |",
+"",
+"===========================================================================================",
+"",
 "- [ Attack Modes ] -",
 "",
 " # | Mode",
@@ -32,7 +33,35 @@ static const char *const USAGE_BIG_HASHMODES[] = {
 "0  | Dictionary",
 "1  | Bruteforce",
 "",
+"===========================================================================================",
 "",
+"- [ Hash Types ] -",
+"",
+" # | Hash Type  | Hash Length (hex) | Status",
+"===+============+===================+===========",
+"001| MD5        | 32 characters     | ✓ Ready",
+"002| SHA1       | 40 characters     | ✓ Ready",
+"003| SHA256     | 64 characters     | ✓ Ready",
+"004| SHA512     | 128 characters    | ✓ Ready",
+"005| Bcrypt     | 60 characters     | ✓ Ready",
+"006| Argon2     | Variable          | ⚠ Coming Soon",
+"",
+"===========================================================================================",
+"",
+"- [ Examples ] -",
+"",
+"# Crack MD5 hash with 4 threads (default)",
+"./hash_cracker -H 5d41402abc4b2a76b9719d911017c592 -m MD5 -w rockyou.txt",
+"",
+"# Crack SHA256 hash with 8 threads",
+"./hash_cracker -H e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 \\",
+"               -m SHA256 -w wordlist.txt -t 8",
+"",
+"# Using numeric hash type codes",
+"./hash_cracker -H 5d41402abc4b2a76b9719d911017c592 -m 001 -w rockyou.txt -t 4"
+};
+
+static const char *const USAGE_BIG_HASHMODES[] = {
 "- [ Hash Types ] -",
 "",
 " # | Hash Type  | Hash Length (hex) | Status",

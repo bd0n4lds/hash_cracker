@@ -25,7 +25,6 @@ int main(int argc, char *argv[]){
     const char *hash_input = NULL;
     const char *hash_type_str = NULL;
     const char *wordlist = NULL;
-    const char *help = NULL;
     int attack_mode = 0;
     int num_threads = 4;
 
@@ -36,7 +35,7 @@ int main(int argc, char *argv[]){
 
         if (strcmp(arg, "--help") == 0 || strcmp(arg, "-help") == 0 || strcmp(arg, "-h") == 0) {
             usage_big_print();
-            return 1;
+            return 0;
         }
 
         if (strcmp(arg, "--types") == 0) {
