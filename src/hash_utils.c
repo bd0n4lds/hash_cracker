@@ -91,13 +91,11 @@ bool is_valid_hash(hash_type_t type, const char *hash){
    case HASH_BCRYPT:
       return is_valid_bcrypt_hash(hash);
       break;
-   case HASH_ARGON2:
-      // return is_valid_argon2_hash(hash);
-      break;
-   default:
-      fprintf(stderr, "Invalid hash type!\n");
-      return false;
-      break;
+   case HASH_ARGON2: 
+      return (strncmp(hash, "$argon2", 7) == 0);
+      default:
+         fprintf(stderr, "Invalid hash type!\n");
+         return false;
    }
 
 }
@@ -149,12 +147,11 @@ bool hash_verify(hash_type_t type, const char *candidate, const char *target_has
       return bcrypt_verify(candidate, target_hash);
       break;
    case HASH_ARGON2:
-      // return argon2_verify(candidate, target_hash);
-      break;
-   default:
-      fprintf(stderr, "Invalid hash type!\n");
-      return -1;
-      break;
+      // Assuming the standard argon2 library interface
+      return (argon2_verify(target_hash, candidate, strlen(candidate)) == 0);
+      default:
+         fprintf(stderr, "Error: Unsupported or invalid hash type!\n");
+         return false; // Return false for security
    }
 
 }

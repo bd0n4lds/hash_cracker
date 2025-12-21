@@ -39,6 +39,8 @@ typedef struct wordlist_t wordlist_t;
 
 wordlist_t *wordlist_open(const char *wordlist_path);
 bool wordlist_next_to_buffer(wordlist_t *handle, char *buffer, size_t buffer_len);
+char **wordlist_load_all(const char *wordlist_path, size_t *out_count);
+void wordlist_free_call(char **words, size_t word_count);
 void wordlist_close(wordlist_t *handle);
 
 
