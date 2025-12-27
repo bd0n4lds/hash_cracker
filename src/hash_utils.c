@@ -148,7 +148,7 @@ bool hash_verify(hash_type_t type, const char *candidate, const char *target_has
       break;
    case HASH_ARGON2:
       // Assuming the standard argon2 library interface
-      return (argon2_verify(target_hash, candidate, strlen(candidate)) == 0);
+     // return (argon2_verify(target_hash, candidate, strlen(candidate)) == 0);
       default:
          fprintf(stderr, "Error: Unsupported or invalid hash type!\n");
          return false; // Return false for security
