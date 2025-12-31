@@ -27,7 +27,7 @@ int md5_compute_hex(const char *candidate, char *out_hex, size_t out_hex_len) {
     unsigned char hash[EVP_MAX_MD_SIZE];
     unsigned int hash_len;
 
-    if(!EVP_DigestInit_ex(ctx, EVP_md5(), NULL) || EVP_DigestUpdate(ctx, candidate, strlen(candidate)) || EVP_DigestFinal_ex(ctx, hash, &hash_len)) {
+    if(!EVP_DigestInit_ex(ctx, EVP_md5(), NULL) || !EVP_DigestUpdate(ctx, candidate, strlen(candidate)) || !EVP_DigestFinal_ex(ctx, hash, &hash_len)) {
         EVP_MD_CTX_free(ctx);
         return -1;
     }
