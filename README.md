@@ -109,7 +109,7 @@ make rebuild # clean all
 Example invocation:
 
 ```bash
-hash-cracker --hash=path/to/hash.txt --hash-type=md5 --t 4 --wordlist=path/to/wordlist.txt
+hash-cracker --hash=path/to/hash.txt --hash-type=md5 -t 4 --wordlist=path/to/wordlist.txt
 ```
 
 ### Arguments
